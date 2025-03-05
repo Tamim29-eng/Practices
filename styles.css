@@ -1,0 +1,85 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    perspective: 1000px;
+}
+
+.game-container {
+    display: flex;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    gap: 30px;
+    transition: all 0.3s ease;
+}
+
+.dice-container {
+    width: 200px;
+    height: 200px;
+    perspective: 1000px;
+    position: relative;
+}
+
+.dice {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 1s;
+}
+
+.dice-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    border: 3px solid #3498db;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 72px;
+    font-weight: bold;
+    color: #2c3e50;
+    backface-visibility: hidden;
+}
+
+/* 3D Dice Face Positioning */
+.dice-face.front  { transform: translateZ(100px); }
+.dice-face.back   { transform: rotateX(-180deg) translateZ(100px); }
+.dice-face.right  { transform: rotateY(90deg) translateZ(100px); }
+.dice-face.left   { transform: rotateY(-90deg) translateZ(100px); }
+.dice-face.top    { transform: rotateX(90deg) translateZ(100px); }
+.dice-face.bottom { transform: rotateX(-90deg) translateZ(100px); }
+
+/* Dice Rolling Animation */
+@keyframes rollDice {
+    0% { 
+        transform: rotateX(0deg) rotateY(0deg); 
+    }
+    50% { 
+        transform: rotateX(720deg) rotateY(540deg); 
+    }
+    100% { 
+        transform: rotateX(360deg) rotateY(360deg); 
+    }
+}
+
+.dice.roll {
+    animation: rollDice 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .game-container {
+        flex-direction: column;
+        width: 90%;
+        padding: 20px;
+    }
+}
