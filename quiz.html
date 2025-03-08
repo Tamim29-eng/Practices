@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <h1>Quiz Game</h1>
+            <div class="selection-container">
+                <div class="selection-group">
+                    <label for="category">Select Category:</label>
+                    <select id="category">
+                        <option value="9">General Knowledge</option>
+                        <option value="17">Science & Nature</option>
+                        <option value="18">Computers</option>
+                        <option value="21">Sports</option>
+                        <option value="23">History</option>
+                    </select>
+                </div>
+                <div class="selection-group">
+                    <label for="difficulty">Select Difficulty:</label>
+                    <select id="difficulty">
+                        <option value="all">All Difficulties (30 questions)</option>
+                        <option value="easy">Easy (10 questions)</option>
+                        <option value="medium">Medium (10 questions)</option>
+                        <option value="hard">Hard (10 questions)</option>
+                    </select>
+                </div>
+                <div class="info-text">
+                    <p>Quiz Information:</p>
+                    <ul id="quiz-info">
+                        <li>All Difficulties: 30 questions (10 Easy, 10 Medium, 10 Hard)</li>
+                    </ul>
+                </div>
+            </div>
+            <button id="start-btn" class="btn">Start Quiz</button>
+        </div>
+        <!-- Game Screen -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-header">
+                <div class="score-container">Score: <span id="score">0</span></div>
+                <div class="timer-container">
+                    Time: <span id="timer">15</span>s
+                </div>
+                <div class="question-number">
+                    Question: <span id="current-question">1</span>/<span id="total-questions">30</span>
+                </div>
+            </div>
+            <div class="question-container">
+                <h2 id="question-text">Question goes here?</h2>
+                <div class="options-container">
+                    <button class="option-btn" data-index="0">A: Option 1</button>
+                    <button class="option-btn" data-index="1">B: Option 2</button>
+                    <button class="option-btn" data-index="2">C: Option 3</button>
+                    <button class="option-btn" data-index="3">D: Option 4</button>
+                </div>
+            </div>
+            <div id="feedback" class="feedback-container hidden">
+                <p id="feedback-text"></p>
+                <button id="next-btn" class="btn">Next Question</button>
+            </div>
+        </div>
+        <!-- End Screen -->
+        <div id="end-screen" class="screen hidden">
+            <h1>Quiz Completed!</h1>
+            <div class="final-score">
+                <p>Your Final Score: <span id="final-score">0</span>/<span id="max-score">30</span></p>
+            </div>
+            <button id="restart-btn" class="btn">Play Again</button>
+        </div>
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="screen hidden">
+            <div class="loader"></div>
+            <p>Loading questions...</p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
