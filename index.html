@@ -12,7 +12,7 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
-            perspective: 300px;
+            perspective: 1000px;
         }
 
         .game-container {
@@ -24,19 +24,11 @@
             gap: 20px;
         }
 
-        .game-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
         .dice-container {
-            width: 75px;
-            height: 75px;
-            perspective: 300px;
+            width: 200px;
+            height: 200px;
+            perspective: 1000px;
             position: relative;
-            margin-bottom: 10px;
         }
 
         .dice {
@@ -52,23 +44,23 @@
             width: 100%;
             height: 100%;
             background-color: white;
-            border: 1px solid #3498db;
-            border-radius: 8px;
+            border: 3px solid #3498db;
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 24px;
+            font-size: 72px;
             font-weight: bold;
             color: #2c3e50;
             backface-visibility: hidden;
         }
 
-        .dice-face.front  { transform: translateZ(37.5px); }
-        .dice-face.back   { transform: rotateX(-180deg) translateZ(37.5px); }
-        .dice-face.right  { transform: rotateY(90deg) translateZ(37.5px); }
-        .dice-face.left   { transform: rotateY(-90deg) translateZ(37.5px); }
-        .dice-face.top    { transform: rotateX(90deg) translateZ(37.5px); }
-        .dice-face.bottom { transform: rotateX(-90deg) translateZ(37.5px); }
+        .dice-face.front  { transform: translateZ(100px); }
+        .dice-face.back   { transform: rotateX(-180deg) translateZ(100px); }
+        .dice-face.right  { transform: rotateY(90deg) translateZ(100px); }
+        .dice-face.left   { transform: rotateY(-90deg) translateZ(100px); }
+        .dice-face.top    { transform: rotateX(90deg) translateZ(100px); }
+        .dice-face.bottom { transform: rotateX(-90deg) translateZ(100px); }
 
         @keyframes rollDice {
             0% { transform: rotateX(0deg) rotateY(0deg); }
@@ -78,17 +70,89 @@
         .dice.roll {
             animation: rollDice 1.5s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
         }
-
+        
+        /* Improved UI Styles */
+        .player {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 200px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .player.active {
+            background-color: #d4e6f1;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-5px);
+        }
+        
         .action-buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 100%;
+            margin-top: 20px;
         }
-
-        .action-buttons button {
-            padding: 8px;
-            width: 100%;
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        #reset-game-btn {
+            background-color: #e74c3c;
+        }
+        
+        #reset-game-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        #save-score-btn {
+            background-color: #2ecc71;
+        }
+        
+        #save-score-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .winner-section {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #f39c12;
+            height: 30px;
+        }
+        
+        h2 {
+            margin-top: 0;
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .scores {
+            font-size: 18px;
+        }
+        
+        .scores span {
+            font-weight: bold;
+            color: #2c3e50;
         }
     </style>
 </head>
@@ -131,7 +195,6 @@
     </div>
 
     <script>
-        // Define DiceGame class directly in the script
         class DiceGame {
             constructor() {
                 // Game State Variables
@@ -156,13 +219,16 @@
                     }
                 ];
                 
-                // UI Element
+                // UI Elements
                 this.dice = document.getElementById('dice');
                 this.diceFaces = this.dice.querySelectorAll('.dice-face');
                 this.rollDiceBtn = document.getElementById('roll-dice-btn');
                 this.saveScoreBtn = document.getElementById('save-score-btn');
                 this.resetGameBtn = document.getElementById('reset-game-btn');
                 this.winnerAnnouncement = document.getElementById('winner-announcement');
+                
+                // Track if dice is rolling
+                this.isRolling = false;
 
                 this.initializeEventListeners();
             }
@@ -215,36 +281,53 @@
             }
 
             rollDice() {
+                // Prevent multiple rolls while animation is in progress
+                if (this.isRolling) return;
+                this.isRolling = true;
+                
                 if (!this.gameStarted) this.gameStarted = true;
+
+                // Disable buttons during roll
+                this.rollDiceBtn.disabled = true;
+                this.saveScoreBtn.disabled = true;
 
                 // Trigger Dice Roll Animation
                 this.dice.classList.add('roll');
                 
-                // Remove animation class after completion
-                setTimeout(() => {
-                    this.dice.classList.remove('roll');
-                }, 1500);
-
                 const diceRoll = Math.floor(Math.random() * 6) + 1;
                 
                 // Update dice faces dynamically
                 this.updateDiceFaces(diceRoll);
 
-                const currentPlayer = this.players[this.currentPlayer - 1];
+                // Only update score and game state after animation completes
+                setTimeout(() => {
+                    this.dice.classList.remove('roll');
+                    this.isRolling = false;
+                    
+                    // Re-enable buttons
+                    this.rollDiceBtn.disabled = false;
+                    this.saveScoreBtn.disabled = false;
+                    
+                    // Now update the score
+                    const currentPlayer = this.players[this.currentPlayer - 1];
 
-                if (diceRoll === 1) {
-                    // Reset current score and switch player
-                    currentPlayer.currentScore = 0;
-                    currentPlayer.currentScoreElement.textContent = 0;
-                    this.switchPlayer();
-                } else {
-                    // Add dice roll to current score
-                    currentPlayer.currentScore += diceRoll;
-                    currentPlayer.currentScoreElement.textContent = currentPlayer.currentScore;
-                }
+                    if (diceRoll === 1) {
+                        // Reset current score and switch player
+                        currentPlayer.currentScore = 0;
+                        currentPlayer.currentScoreElement.textContent = 0;
+                        this.switchPlayer();
+                    } else {
+                        // Add dice roll to current score
+                        currentPlayer.currentScore += diceRoll;
+                        currentPlayer.currentScoreElement.textContent = currentPlayer.currentScore;
+                    }
+                }, 1500); // Match the animation duration
             }
 
             saveScore() {
+                // Don't allow saving while dice is rolling
+                if (this.isRolling) return;
+                
                 const currentPlayer = this.players[this.currentPlayer - 1];
                 
                 currentPlayer.savedScore += currentPlayer.currentScore;
@@ -270,6 +353,9 @@
             }
 
             resetGame() {
+                // Don't allow reset while dice is rolling
+                if (this.isRolling) return;
+                
                 this.gameStarted = false;
                 this.currentPlayer = 1;
 
@@ -288,9 +374,9 @@
             }
         }
 
-        // Initialize the game when the DOM is fully loaded
+        // Initialize the game
         document.addEventListener('DOMContentLoaded', () => {
-            window.diceGame = new DiceGame();
+            new DiceGame();
         });
     </script>
 </body>
